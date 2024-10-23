@@ -70,19 +70,20 @@ class ContainerUIHostingController: UIHostingController<ContainerUIHostingContro
                         return
                     }
                     if UIDevice.current.isGeneratingDeviceOrientationNotifications {
-                        // This work-around is to make sure the setup view rotates back to portrait if the previous
-                        // screen was on a different orientation.
-                        // The 0.35s delay here is to wait for any orientation switch animation that happends at
-                        // the same time with the steup view navigation.
-                        let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                            windowScene.requestGeometryUpdate(geometryPreferences) { error in
-                                if let error = error {
-                                    print("Failed to update orientation: \(error)")
+                        // The 0.35s delay ensures any orientation switch animation has completed.
+                        if let windowScene = view.window?.windowScene {
+                            let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                windowScene.requestGeometryUpdate(geometryPreferences) { error in
+                                    if case let error = error {
+                                        print("Failed to update orientation: \(error)")
+                                    }
                                 }
                             }
+                            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+                        } else {
+                            print("Failed to access windowScene")
                         }
-                        UIDevice.current.endGeneratingDeviceOrientationNotifications()
                     }
                 default:
                     if !UIDevice.current.isGeneratingDeviceOrientationNotifications {

@@ -413,16 +413,15 @@ extension CallingView {
     }
 
     private func resetOrientation() {
-        if let windowScene = view.window?.windowScene {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
             windowScene.requestGeometryUpdate(geometryPreferences) { error in
-                if let error = error {
-                    print("Failed to reset orientation: \(error)")
-                }
+                print("Failed to reset orientation: \(error)")
             }
+        } else {
+            print("Failed to access windowScene")
         }
         UIViewController.attemptRotationToDeviceOrientation()
     }
-
 }
 // swiftlint:enable file_length

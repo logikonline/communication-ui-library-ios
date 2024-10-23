@@ -15,8 +15,8 @@ extension DrawerViewControllerProtocol where Self: UIViewController {
             if let windowScene = view.window?.windowScene {
                 let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
                 windowScene.requestGeometryUpdate(geometryPreferences) { error in
-                    if let error = error {
-                        print("Failed to reset orientation: \(error)")
+                    if case let error = error {
+                        print("Failed to update orientation: \(error)")
                     }
                 }
             }

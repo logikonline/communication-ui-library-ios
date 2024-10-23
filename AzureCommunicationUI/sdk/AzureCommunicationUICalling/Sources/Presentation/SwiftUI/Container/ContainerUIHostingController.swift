@@ -74,12 +74,15 @@ class ContainerUIHostingController: UIHostingController<ContainerUIHostingContro
                         // screen was on a different orientation.
                         // The 0.35s delay here is to wait for any orientation switch animation that happends at
                         // the same time with the steup view navigation.
+                        let geometryPreferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                            if UIDevice.current.orientation != .portrait {
-                                UIDevice.current.rotateTo(orientation: .portrait)
+                            windowScene.requestGeometryUpdate(geometryPreferences) { error in
+                                if let error = error {
+                                    print("Failed to update orientation: \(error)")
+                                }
                             }
-                            UIDevice.current.endGeneratingDeviceOrientationNotifications()
                         }
+                        UIDevice.current.endGeneratingDeviceOrientationNotifications()
                     }
                 default:
                     if !UIDevice.current.isGeneratingDeviceOrientationNotifications {
